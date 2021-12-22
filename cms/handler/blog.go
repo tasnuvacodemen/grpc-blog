@@ -33,9 +33,10 @@ type Blog struct {
 	CommentsCount int64
 }
 type BlogFormData struct {
-	Blog  Blog
-	Error map[string]string
-	Pic   string
+	Blog     Blog
+	UserData User
+	Error    map[string]string
+	Pic      string
 }
 
 type BlogList struct {
@@ -224,29 +225,15 @@ func (h *Handler) StoreNewBlog(rw http.ResponseWriter, r *http.Request) {
 			return
 		}
 	}
-	// get userId from session
-	session, err := h.sess.Get(r, sessionName)
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	userId := session.Values["authUserId"]
-	userIdInt, _ := userId.(int64)
-	// fmt.Println("**************************")
-	// fmt.Println(userIdInt)
-
-	res, err := h.uc.GetUserById(r.Context(), &upb.GetUserByIdRequest{
-		ID: int64(userIdInt),
-	})
-	if err != nil {
-		http.Error(rw, err.Error(), http.StatusInternalServerError)
-		return
-	}
+	//getting user id from session
+	userId := h.GetUserIdFromSession(r)
+	// get userData
+	userdata := h.GetUserStruct(rw, r, userId)
 
 	craetedTime := time.Now().Format("2006-01-02 15:04:05")
 
-	blog.AuthorID = res.GetUser().ID
-	blog.AuthorName = res.GetUser().UserName
+	blog.AuthorID = userdata.ID
+	blog.AuthorName = userdata.UserName
 	blog.CreatedAt = craetedTime
 
 	// fmt.Println("**************************")
@@ -288,9 +275,9 @@ func (h *Handler) DeleteBlog(rw http.ResponseWriter, r *http.Request) {
 		http.Error(rw, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	
+
 	//getting user id from session
-	userId :=h.GetUserIdFromSession(r)
+	userId := h.GetUserIdFromSession(r)
 	// getting blog data from database by id
 	blogRes, err := h.bc.ReadBlog(r.Context(), &bpb.ReadBlogRequest{
 		BlogID:   blogId,
@@ -301,8 +288,8 @@ func (h *Handler) DeleteBlog(rw http.ResponseWriter, r *http.Request) {
 		return
 	}
 	// delete blog from db calling grpc service
-	_,err = h.bc.DeleteBlog(r.Context(),&bpb.DeleteBlogRequest{
-		ID: blogId,
+	_, err = h.bc.DeleteBlog(r.Context(), &bpb.DeleteBlogRequest{
+		ID:       blogId,
 		AuthorID: userId,
 	})
 	if err != nil {
@@ -317,7 +304,7 @@ func (h *Handler) DeleteBlog(rw http.ResponseWriter, r *http.Request) {
 	http.Redirect(rw, r, "/", http.StatusTemporaryRedirect)
 }
 
-// edit blog 
+// edit blog
 func (h *Handler) EditBlog(rw http.ResponseWriter, r *http.Request) {
 	//getting blogId from url
 	blogId, err := h.GetBlogIdFromUrl(rw, r)
@@ -325,9 +312,11 @@ func (h *Handler) EditBlog(rw http.ResponseWriter, r *http.Request) {
 		http.Error(rw, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	
+
 	//getting user id from session
-	userId :=h.GetUserIdFromSession(r)
+	userId := h.GetUserIdFromSession(r)
+	// get userData
+	userdata := h.GetUserStruct(rw, r, userId)
 	// getting blog data from database by id
 	blogRes, err := h.bc.ReadBlog(r.Context(), &bpb.ReadBlogRequest{
 		BlogID:   blogId,
@@ -338,25 +327,98 @@ func (h *Handler) EditBlog(rw http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	blogData := Blog{
+		ID:            blogRes.GetBlog().ID,
+		AuthorID:      blogRes.GetBlog().AuthorID,
+		AuthorName:    blogRes.GetBlog().AuthorName,
+		CreatedAt:     blogRes.GetBlog().CreatedAt,
+		UpdateAt:      blogRes.GetBlog().UpdateAt,
+		PictureString: blogRes.GetBlog().PictureString,
+		Title:         blogRes.GetBlog().Title,
+		Description:   blogRes.GetBlog().Description,
+		UpvoteCount:   blogRes.GetBlog().UpvoteCount,
+		DownvoteCount: blogRes.GetBlog().DownvoteCount,
+		CommentsCount: blogRes.GetBlog().CommentsCount,
+	}
+	if blogData.ID == 0 {
+		http.Redirect(rw, r, "/", http.StatusTemporaryRedirect)
+		return
+	}
+	h.loadEditBlogTemplate(rw, blogData, userdata, map[string]string{})
+}
 
-	// delete blog from db calling grpc service
-	_,err = h.bc.DeleteBlog(r.Context(),&bpb.DeleteBlogRequest{
-		ID: blogId,
-		AuthorID: userId,
+func (h *Handler) Updateblog(rw http.ResponseWriter, r *http.Request) {
+	//getting blogId from url
+	blogId, err := h.GetBlogIdFromUrl(rw, r)
+	if err != nil {
+		http.Error(rw, err.Error(), http.StatusInternalServerError)
+		return
+	}
+	// parsing form
+	if err := r.ParseForm(); err != nil {
+		http.Error(rw, err.Error(), http.StatusInternalServerError)
+		return
+	}
+	blog := Blog{}
+
+	if err := h.decoder.Decode(&blog, r.PostForm); err != nil {
+		http.Error(rw, err.Error(), http.StatusInternalServerError)
+		return
+	}
+	blog.ID = blogId
+	blog.UpdateAt = time.Now().Format("2006-01-02 15:04:05")
+	//getting user id from session
+	userId := h.GetUserIdFromSession(r)
+	// get userData
+	userdata := h.GetUserStruct(rw, r, userId)
+
+	// form validation
+
+	if err := blog.Validate(); err != nil {
+		vErrors, ok := err.(validation.Errors)
+		if ok {
+			vErrs := make(map[string]string)
+			for key, value := range vErrors {
+				vErrs[key] = value.Error()
+			}
+			h.loadEditBlogTemplate(rw, blog, userdata, vErrs)
+			return
+		} else {
+			http.Error(rw, err.Error(), http.StatusInternalServerError)
+			return
+		}
+	}
+
+	editRes, err := h.bc.EditBlog(r.Context(), &bpb.EditBlogRequest{
+		Blog: &bpb.Blog{
+			ID:            blog.ID,
+			AuthorID:      blog.AuthorID,
+			AuthorName:    blog.AuthorName,
+			CreatedAt:     blog.CreatedAt,
+			UpdateAt:      blog.UpdateAt,
+			PictureString: blog.PictureString,
+			Title:         blog.Title,
+			Description:   blog.Description,
+			UpvoteCount:   blog.UpvoteCount,
+			DownvoteCount: blog.DownvoteCount,
+			CommentsCount: blog.CommentsCount,
+		},
 	})
 	if err != nil {
 		http.Error(rw, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	//deleting image from local storage
-	if err := deleteImage(blogRes.GetBlog().PictureString); err != nil {
+
+	if editRes.GetBlog().ID == 0 {
 		http.Error(rw, err.Error(), http.StatusInternalServerError)
 		return
 	}
+
 	http.Redirect(rw, r, "/", http.StatusTemporaryRedirect)
+
 }
 
-// load create blog template 
+// load create blog template
 func (h *Handler) loadCreateBlogTemplate(rw http.ResponseWriter, blog Blog, vErrs map[string]string) {
 
 	form := BlogFormData{
@@ -370,12 +432,14 @@ func (h *Handler) loadCreateBlogTemplate(rw http.ResponseWriter, blog Blog, vErr
 		return
 	}
 }
+
 // load edit blog
-func (h *Handler) loadEditBlogTemplate (rw http.ResponseWriter, blog Blog, vErrs map[string]string) {
+func (h *Handler) loadEditBlogTemplate(rw http.ResponseWriter, blog Blog, user User, vErrs map[string]string) {
 
 	form := BlogFormData{
-		Blog:  blog,
-		Error: vErrs,
+		Blog:     blog,
+		UserData: user,
+		Error:    vErrs,
 	}
 
 	if err := h.templates.ExecuteTemplate(rw, "update-blog.html", form); err != nil {
@@ -442,7 +506,6 @@ func (h *Handler) GetUserStruct(rw http.ResponseWriter, r *http.Request, userId 
 	}
 	return User{}
 }
-
 
 // delete image after deleting book from table
 
