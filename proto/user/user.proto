@@ -1,0 +1,38 @@
+syntax="proto3";
+
+option go_package="./proto/user";
+
+package user;
+
+message User {
+    int64 ID =1;
+    string UserName =2;
+    string Email=3;
+    string Password =4;
+}
+message RegisterUserRequest {
+    User User=1;
+}
+message RegisterUserResponce {
+    int64 ID =1;
+}
+
+message GetUserRequest {
+    string UserName =1;
+}
+message GetUserResponce {
+    User User=1;
+}
+
+message GetUserByIdRequest {
+    int64 ID =1;
+}
+message GetUserByIdResponce {
+    User User=1;
+}
+
+service TodoService{
+    rpc Register(RegisterUserRequest) returns(RegisterUserResponce){}
+    rpc GetUser(GetUserRequest) returns(GetUserResponce){}
+    rpc GetUserById(GetUserByIdRequest) returns(GetUserByIdResponce){}
+}

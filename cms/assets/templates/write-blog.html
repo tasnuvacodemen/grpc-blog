@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create Blog</title>
+</head>
+<style>
+    .main-div{
+        width: 80%;
+        margin-right: auto;
+        margin-left: auto;
+        text-align: center;
+    }
+    .single-div{
+        margin: 10px;
+    }
+</style>
+<body>
+    <form action="/blog/store" method="post" class="main-div" enctype="multipart/form-data">
+        <h4>Write new blog:</h4>
+        <div class="single-div">
+            <label for="title">Title of the Blog</label>
+            <input type="text" name="Title" id="title" value="{{.Blog.Title}}" required>
+            {{if .Error}}
+            <div><small>{{.Error.Title}}</small></div>
+            {{end}}
+        </div>
+        <div class="single-div">
+            <label for="title">Description of blog:</label>
+            <textarea name="Description" id="Description" cols="30" rows="10" required>{{.Blog.Description}}</textarea>
+            {{if .Error}}
+            <div><small>{{.Error.Description}}</small></div>
+            {{end}}
+        </div>
+        
+       <div class="single-div">
+        <label for="Picture">Title of the book</label>
+        <input type="file" name="Picture" id="Picture" accept="image/png,image/jpeg,image/jpg">
+        {{if .Error}}
+        <div><small>{{.Error.file}}</small></div>
+        {{end}}
+       </div>
+       <button type="submit">Submit Blog</button>
+    </form>
+</body>
+<script>
+    document.getElementById("Picture")
+</script>
+</html>

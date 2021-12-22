@@ -1,0 +1,9 @@
+[protoc]
+version=v3.12.0
+
+[generate go]
+json_tag_postproc=true
+plugins_version=v1.26.0
+
+[generate grpc-go]
+plugins_version=v1.1.0

@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <form method="post" action="/todos/store">
+		<label>Title</label>
+		<input type="text" name="Title" value="{{.Todo.Title}}"/>
+        <br>
+        <p>{{.Error.Title}}</p>
+        <br>
+        <label>Description</label>
+        <textarea name="Description" id="" cols="30" rows="10" >{{.Todo.Description}}</textarea>
+        <br>
+        <p>{{.Error.Description}}</p>
+        <br>
+		<button type="submit">create todo</button>
+	</form>
+</body>
+</html>

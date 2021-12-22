@@ -1,0 +1,13 @@
+package todo
+
+// Util is a utility service.
+type Util interface {
+	// Echo returns the passed message.
+	Echo(Message) Message
+}
+
+// Message contains an echo message.
+type Message struct {
+	// Msg is a message from a client.
+	Msg string `pb:"1"`
+}

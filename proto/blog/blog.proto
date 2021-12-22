@@ -1,0 +1,158 @@
+syntax="proto3";
+
+option go_package="./proto/blog";
+
+package blog;
+
+message Blog {
+    int64 ID =1;
+    int64 AuthorID =2;
+    string AuthorName =3;
+    string CreatedAt =4;
+    string UpdateAt =5;
+    string PictureString =6;
+    string Title =7;
+    string Description =8;
+    int64 UpvoteCount =9;
+    int64 DownvoteCount =10;
+    int64 CommentsCount =11; 
+}
+message Upvote {
+    int64 ID =1;
+    int64 BlogID=2;
+    int64 UserID=3;
+}
+message Downvote {
+    int64 ID =1;
+    int64 BlogID=2;
+    int64 UserID=3;
+}
+message Comment {
+    int64 ID =1;
+    int64 BlogID=2;
+    int64 UserID=3;
+    string UserName =4;
+    string Content =5;
+    string CommentedAt=6;
+}
+
+
+message WriteBlogRequest {
+    Blog Blog =1;
+}
+message WriteBlogResponse {
+    int64 ID =1;
+}
+
+message DeleteBlogRequest {
+    int64 ID =1;
+    int64 AuthorID =2; 
+}
+message DeleteBlogResponse {}
+
+message ReadBlogRequest {
+    int64 BlogID =1;
+    int64 AuthorID =2; 
+}
+message ReadBlogResponse {
+    Blog Blog =1;
+    bool IsAuthor =2;
+}
+
+message ReadAllBlogRequest {}
+message ReadAllBlogResponse {
+    repeated Blog Blogs =1;
+}
+
+message EditBlogRequest {
+    Blog Blog =1;
+}
+message EditBlogResponse {
+    Blog Blog =1;
+}
+
+message UpvoteBlogRequest {
+    Upvote Upvote =1; 
+}
+message UpvoteBlogResponse {
+    int64 UpvoteId =1;
+}
+
+message GetUpvoteRequest {
+    int64 BlogID=1;
+    int64 UserID=2; 
+}
+message GetUpvoteResponse {
+    bool IsUpvoted =1;
+}
+
+message GetAllUpvoteRequest {
+    int64 BlogID=1;
+}
+message GetAllUpvoteResponse {
+    repeated Upvote Upvotes =1;
+}
+
+message RevertUpvoteBlogRequest {
+    int64 UpvoteId =1; 
+    int64 UserId =2;
+}
+message RevertUpvoteBlogResponse {}
+message DownVoteRequest {
+    Downvote Downvote =1; 
+}
+message DownVoteResponse {
+    int64 DownvoteId =1;
+}
+
+message RevertDownVoteBlogRequest {
+    int64 DownvoteId =1; 
+    int64 UserId =2;
+}
+message RevertDownVoteBlogResponse {}
+
+message GetDownvoteRequest {
+    int64 BlogID=1;
+    int64 UserID=2; 
+}
+message GetDownvoteResponse {
+    bool IsDownvoted =1;
+}
+
+message GetAllDownvoteRequest {
+    int64 BlogID=1;
+}
+message GetAllDownvoteResponse {
+    repeated Downvote Downvotes =1;
+}
+
+message CommentBlogRequest {
+    Comment Comment=1;
+}
+message CommentBlogResponse {
+    int64 CommentID =1;
+}
+message GetAllCommentsRequest {
+    int64 BlogID =1;
+}
+message GetAllCommentsResponse {
+    repeated Comment Comments=1;
+}
+
+service BlogService{
+    rpc WriteBlog (WriteBlogRequest) returns (WriteBlogResponse){};
+    rpc DeleteBlog (DeleteBlogRequest) returns (DeleteBlogResponse){};
+    rpc ReadBlog (ReadBlogRequest) returns (ReadBlogResponse){};
+    rpc ReadAllBlog (ReadAllBlogRequest) returns (ReadAllBlogResponse){};
+    rpc EditBlog (EditBlogRequest) returns (EditBlogResponse){};
+    rpc UpvoteBlog (UpvoteBlogRequest) returns (UpvoteBlogResponse){};
+    rpc RevertUpvoteBlog (RevertUpvoteBlogRequest) returns (RevertUpvoteBlogResponse){};
+    rpc GetUpvote (GetUpvoteRequest) returns (GetUpvoteResponse){};
+    rpc GetAllUpvote (GetAllUpvoteRequest) returns (GetAllUpvoteResponse){};
+    rpc DownVoteBlog (DownVoteRequest) returns (DownVoteResponse){};
+    rpc RevertDownVoteBlog (RevertDownVoteBlogRequest) returns (RevertDownVoteBlogResponse){};
+    rpc GetDownvote (GetDownvoteRequest) returns (GetDownvoteResponse){};
+    rpc GetAllDownvote (GetAllDownvoteRequest) returns (GetAllDownvoteResponse){};
+    rpc CommentBlog (CommentBlogRequest) returns (CommentBlogResponse){};
+    rpc GetAllComments (GetAllCommentsRequest) returns (GetAllCommentsResponse){};
+}

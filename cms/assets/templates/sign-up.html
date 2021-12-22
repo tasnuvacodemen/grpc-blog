@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign up</title>
+</head>
+<body>
+    <form method="post" action="/register">
+		<label>Username</label>
+		<input type="text" name="UserName" value="{{.User.UserName}}"/>
+        <br>
+        <p>{{.Error.UserName}}</p>
+        <br>
+
+        <label>Email</label>
+		<input type="email" name="Email" value="{{.User.Email}}"/>
+        <br>
+        <p>{{.Error.Email}}</p>
+        <br>
+
+        <label>Password</label>
+		<input type="password" name="Password" value=""/>
+        <br>
+        <p>{{.Error.Password}}</p>
+        <br>
+		<button type="submit">Register</button>
+	</form>
+</body>
+</html>
