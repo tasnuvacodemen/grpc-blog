@@ -216,3 +216,335 @@ func TestStorage_DeleteBlog(t *testing.T) {
 		})
 	}
 }
+
+func TestStorage_UpvoteBlog(t *testing.T) {
+	s := newTestStorage(t)
+	tests := []struct {
+		name    string
+		in      storage.Upvote
+		want    int64
+		wantErr bool
+	}{
+		{
+			name: "UPVOTE SUCCESS",
+			in: storage.Upvote{
+				BlogID: 2,
+				UserID: 24,
+			},
+			want: 1,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got, err := s.UpvoteBlog(context.TODO(), tt.in)
+			if (err != nil) != tt.wantErr {
+				t.Errorf("Storage.UpvoteBlog() error = %v, wantErr %v", err, tt.wantErr)
+				return
+			}
+			if got != tt.want {
+				t.Errorf("Storage.UpvoteBlog() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
+func TestStorage_DownVoteBlog(t *testing.T) {
+	s := newTestStorage(t)
+	tests := []struct {
+		name    string
+		in      storage.Downvote
+		want    int64
+		wantErr bool
+	}{
+		{
+			name: "DOWNVOTE SUCCESS",
+			in: storage.Downvote{
+				BlogID: 2,
+				UserID: 24,
+			},
+			want: 1,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got, err := s.DownVoteBlog(context.TODO(), tt.in)
+			if (err != nil) != tt.wantErr {
+				t.Errorf("Storage.DownVoteBlog() error = %v, wantErr %v", err, tt.wantErr)
+				return
+			}
+			if got != tt.want {
+				t.Errorf("Storage.DownVoteBlog() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
+func TestStorage_CommentBlog(t *testing.T) {
+	s := newTestStorage(t)
+	tests := []struct {
+		name    string
+		in      storage.Comment
+		want    int64
+		wantErr bool
+	}{
+		{
+			name: "DOWNVOTE SUCCESS",
+			in: storage.Comment{
+				BlogID:      2,
+				UserID:      24,
+				UserName:    "Test user",
+				Content:     "test content",
+				CommentedAt: "test date",
+			},
+			want: 1,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got, err := s.CommentBlog(context.TODO(), tt.in)
+			if (err != nil) != tt.wantErr {
+				t.Errorf("Storage.CommentBlog() error = %v, wantErr %v", err, tt.wantErr)
+				return
+			}
+			if got != tt.want {
+				t.Errorf("Storage.CommentBlog() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
+func TestStorage_GetUpvote(t *testing.T) {
+	s := newTestStorage(t)
+	tests := []struct {
+		name    string
+		blog_id int64
+		user_id int64
+		want    *storage.Upvote
+		want1   int64
+		wantErr bool
+	}{
+		{
+			name:    "GET ONE UPVOTE SUCCESS",
+			blog_id: 2,
+			user_id: 24,
+			want: &storage.Upvote{
+				ID:     1,
+				BlogID: 2,
+				UserID: 24,
+			},
+			want1: 1,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got, got1, err := s.GetUpvote(context.TODO(), tt.blog_id, tt.user_id)
+			if (err != nil) != tt.wantErr {
+				t.Errorf("Storage.GetUpvote() error = %v, wantErr %v", err, tt.wantErr)
+				return
+			}
+			if !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("Storage.GetUpvote() got = %v, want %v", got, tt.want)
+			}
+			if got1 != tt.want1 {
+				t.Errorf("Storage.GetUpvote() got1 = %v, want %v", got1, tt.want1)
+			}
+		})
+	}
+}
+
+func TestStorage_GetDownvote(t *testing.T) {
+	s := newTestStorage(t)
+	tests := []struct {
+		name    string
+		blog_id int64
+		user_id int64
+		want    *storage.Downvote
+		want1   int64
+		wantErr bool
+	}{
+		{
+			name:    "GET ONE DOWN SUCCESS",
+			blog_id: 2,
+			user_id: 24,
+			want: &storage.Downvote{
+				ID:     1,
+				BlogID: 2,
+				UserID: 24,
+			},
+			want1: 1,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got, got1, err := s.GetDownvote(context.TODO(), tt.blog_id, tt.user_id)
+			if (err != nil) != tt.wantErr {
+				t.Errorf("Storage.GetDownvote() error = %v, wantErr %v", err, tt.wantErr)
+				return
+			}
+			if !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("Storage.GetDownvote() got = %v, want %v", got, tt.want)
+			}
+			if got1 != tt.want1 {
+				t.Errorf("Storage.GetDownvote() got1 = %v, want %v", got1, tt.want1)
+			}
+		})
+	}
+}
+
+func TestStorage_GetAllComments(t *testing.T) {
+	s := newTestStorage(t)
+	tests := []struct {
+		name    string
+		blog_id int64
+		want    []*storage.Comment
+		wantErr bool
+	}{
+		{
+			name:    "Get all comments success",
+			blog_id: 2,
+			want: []*storage.Comment{
+				{
+					ID:          1,
+					BlogID:      2,
+					UserID:      24,
+					UserName:    "Test user",
+					Content:     "test content",
+					CommentedAt: "test date",
+				},
+			},
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+
+			got, err := s.GetAllComments(context.TODO(), tt.blog_id)
+			if (err != nil) != tt.wantErr {
+				t.Errorf("Storage.GetAllComments() error = %v, wantErr %v", err, tt.wantErr)
+				return
+			}
+			if !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("Storage.GetAllComments() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
+func TestStorage_GetAllUpvote(t *testing.T) {
+	s := newTestStorage(t)
+	tests := []struct {
+		name    string
+		blog_id int64
+		want    []*storage.Upvote
+		wantErr bool
+	}{
+		{
+			name:    "GET ALL UPVOTES SUCCESS",
+			blog_id: 2,
+			want: []*storage.Upvote{
+				{
+					ID:     1,
+					BlogID: 2,
+					UserID: 24,
+				},
+			},
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+
+			got, err := s.GetAllUpvote(context.TODO(), tt.blog_id)
+			if (err != nil) != tt.wantErr {
+				t.Errorf("Storage.GetAllUpvote() error = %v, wantErr %v", err, tt.wantErr)
+				return
+			}
+			if !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("Storage.GetAllUpvote() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
+func TestStorage_GetAllDownvote(t *testing.T) {
+	s :=newTestStorage(t)
+	tests := []struct {
+		name    string
+		blog_id int64
+		want    []*storage.Downvote
+		wantErr bool
+	}{
+		{
+			name:    "GET ALL DOWNVOTES SUCCESS",
+			blog_id: 2,
+			want: []*storage.Downvote{
+				{
+					ID:     1,
+					BlogID: 2,
+					UserID: 24,
+				},
+			},
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			
+			got, err := s.GetAllDownvote(context.TODO(), tt.blog_id)
+			if (err != nil) != tt.wantErr {
+				t.Errorf("Storage.GetAllDownvote() error = %v, wantErr %v", err, tt.wantErr)
+				return
+			}
+			if !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("Storage.GetAllDownvote() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
+
+func TestStorage_RevertUpvoteBlog(t *testing.T) {
+	s := newTestStorage(t)
+	tests := []struct {
+		name      string
+		upvote_id int64
+		user_id   int64
+		wantErr   bool
+	}{
+		{
+			name:      "DELETE UPVOTE SUCCESS",
+			upvote_id: 1,
+			user_id:   24,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+
+			if err := s.RevertUpvoteBlog(context.TODO(), tt.upvote_id, tt.user_id); (err != nil) != tt.wantErr {
+				t.Errorf("Storage.RevertUpvoteBlog() error = %v, wantErr %v", err, tt.wantErr)
+			}
+		})
+	}
+}
+
+func TestStorage_RevertDownVoteBlog(t *testing.T) {
+	s := newTestStorage(t)
+	tests := []struct {
+		name        string
+		downvote_id int64
+		user_id     int64
+		wantErr     bool
+	}{
+		{
+			name:        "DELETE DOWNVOTE SUCCESS",
+			downvote_id: 1,
+			user_id:     24,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+
+			if err := s.RevertDownVoteBlog(context.TODO(), tt.downvote_id, tt.user_id); (err != nil) != tt.wantErr {
+				t.Errorf("Storage.RevertDownVoteBlog() error = %v, wantErr %v", err, tt.wantErr)
+			}
+		})
+	}
+}
+

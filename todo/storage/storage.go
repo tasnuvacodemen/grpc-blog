@@ -39,7 +39,7 @@ type Downvote struct{
 }
 type Comment struct{
 	ID  int64 `db:"id"`
-    BlogID int64 `db:"blog_id"`
+     BlogID int64 `db:"blog_id"`
 	UserID int64 `db:"user_id"`
      UserName  string `db:"user_name"`
      Content  string `db:"content"`

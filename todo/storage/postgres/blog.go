@@ -40,6 +40,43 @@ const updateBlog = `
 		id =:id
 	RETURNING *;
 `
+// upvote query
+const upvote =`
+	INSERT INTO upvotes(
+		blog_id,
+		user_id
+	) VALUES(
+		:blog_id,
+		:user_id
+	)RETURNING id;
+`
+
+// downvote query
+const downvote =`
+	INSERT INTO downvotes(
+		blog_id,
+		user_id
+	) VALUES(
+		:blog_id,
+		:user_id
+	)RETURNING id;
+`
+// downvote query
+const comment =`
+	INSERT INTO comments(
+		blog_id,
+		user_id,
+		user_name,
+		content,
+		commented_at
+	) VALUES(
+		:blog_id,
+		:user_id,
+		:user_name,
+		:content,
+		:commented_at
+	)RETURNING id;
+`
 func (s *Storage) WriteBlog(ctx context.Context, b storage.Blog) (int64, error) {
 	stmt, err := s.db.PrepareNamed(writeBlog)
 	if err != nil {
@@ -89,4 +126,100 @@ func (s *Storage) EditBlog(ctx context.Context, b storage.Blog)  (*storage.Blog,
 	}
 	return &b, nil
 }
+
+
+// upvote functions
+func (s *Storage) UpvoteBlog(ctx context.Context, u storage.Upvote) (int64, error) {
+	stmt, err := s.db.PrepareNamed(upvote)
+	if err != nil {
+		return 0, err
+	}
+	var id int64
+	if err := stmt.Get(&id, u); err != nil {
+		return 0, err
+	}
+	return id, nil
+}
+
+func (s *Storage) GetUpvote(ctx context.Context, blog_id int64, user_id int64)  (*storage.Upvote,int64, error) {
+	var b storage.Upvote
+	if err:=s.db.Get(&b,"SELECT * FROM upvotes WHERE blog_id=$1 AND user_id=$2",blog_id,user_id);err!=nil{
+		return nil,0,err;
+	}
+	return &b,b.ID,nil;
+}
+
+func (s *Storage) GetAllUpvote(ctx context.Context, blog_id int64)  ([]*storage.Upvote, error) {
+	upvotes := []*storage.Upvote{}
+	if err :=s.db.Select(&upvotes, "SELECT * FROM upvotes WHERE blog_id=$1",blog_id);err!=nil{
+		return []*storage.Upvote{},err
+	}
+	return upvotes,nil;
+}
+
+func (s *Storage) RevertUpvoteBlog(ctx context.Context, upvote_id int64, user_id int64)  error {
+	var b storage.Upvote
+	if err:=s.db.Get(&b,"DELETE FROM upvotes WHERE id=$1 RETURNING *",upvote_id);err!=nil{
+		return err
+	}
+	return nil;
+}
+
+// downvote functions
+func (s *Storage) DownVoteBlog(ctx context.Context, u storage.Downvote) (int64, error) {
+	stmt, err := s.db.PrepareNamed(downvote)
+	if err != nil {
+		return 0, err
+	}
+	var id int64
+	if err := stmt.Get(&id, u); err != nil {
+		return 0, err
+	}
+	return id, nil
+}
+
+func (s *Storage) GetDownvote(ctx context.Context, blog_id int64, user_id int64)  (*storage.Downvote,int64, error) {
+	var b storage.Downvote
+	if err:=s.db.Get(&b,"SELECT * FROM downvotes WHERE blog_id=$1 AND user_id=$2",blog_id,user_id);err!=nil{
+		return nil,0,err;
+	}
+	return &b,b.ID,nil;
+}
+func (s *Storage) GetAllDownvote(ctx context.Context, blog_id int64)  ([]*storage.Downvote, error) {
+	downvotes := []*storage.Downvote{}
+	if err :=s.db.Select(&downvotes, "SELECT * FROM downvotes WHERE blog_id=$1",blog_id);err!=nil{
+		return []*storage.Downvote{},err
+	}
+	return downvotes,nil;
+}
+
+func (s *Storage) RevertDownVoteBlog(ctx context.Context, downvote_id int64, user_id int64)  error {
+	var b storage.Downvote
+	if err:=s.db.Get(&b,"DELETE FROM downvotes WHERE id=$1 RETURNING *",downvote_id);err!=nil{
+		return err
+	}
+	return nil;
+}
+
+// Comment functions
+func (s *Storage) CommentBlog(ctx context.Context, u storage.Comment) (int64, error) {
+	stmt, err := s.db.PrepareNamed(comment)
+	if err != nil {
+		return 0, err
+	}
+	var id int64
+	if err := stmt.Get(&id, u); err != nil {
+		return 0, err
+	}
+	return id, nil
+}
+
+func (s *Storage) GetAllComments(ctx context.Context, blog_id int64)  ([]*storage.Comment, error) {
+	comments := []*storage.Comment{}
+	if err :=s.db.Select(&comments, "SELECT * FROM comments WHERE blog_id=$1",blog_id);err!=nil{
+		return []*storage.Comment{},err
+	}
+	return comments,nil;
+}
+
 	

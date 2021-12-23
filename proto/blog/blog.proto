@@ -83,7 +83,7 @@ message GetUpvoteRequest {
     int64 UserID=2; 
 }
 message GetUpvoteResponse {
-    bool IsUpvoted =1;
+    int64 IsUpvotedId =1;
 }
 
 message GetAllUpvoteRequest {
@@ -116,7 +116,7 @@ message GetDownvoteRequest {
     int64 UserID=2; 
 }
 message GetDownvoteResponse {
-    bool IsDownvoted =1;
+    int64 IsDownvotedId =1;
 }
 
 message GetAllDownvoteRequest {
@@ -145,6 +145,8 @@ service BlogService{
     rpc ReadBlog (ReadBlogRequest) returns (ReadBlogResponse){};
     rpc ReadAllBlog (ReadAllBlogRequest) returns (ReadAllBlogResponse){};
     rpc EditBlog (EditBlogRequest) returns (EditBlogResponse){};
+
+    // here
     rpc UpvoteBlog (UpvoteBlogRequest) returns (UpvoteBlogResponse){};
     rpc RevertUpvoteBlog (RevertUpvoteBlogRequest) returns (RevertUpvoteBlogResponse){};
     rpc GetUpvote (GetUpvoteRequest) returns (GetUpvoteResponse){};
