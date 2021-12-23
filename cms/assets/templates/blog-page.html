@@ -87,24 +87,24 @@
         </div>
     </section>
     <section>
-        <div class="container mx-auto border-t border-b py-6 w-7/12 mb-16 ">
+        <div class="container mx-auto border-t border-b py-6 w-7/12 mb-6">
             <div class="w-full flex justify-between">
                 <div class="w-1/2">
                     <div class="w-full flex gap-x-12">
                         <div class="text-center">
                             {{if .HasUpvoted}}
-                            <div><a href=""><img class="w-10 pb-1 react" src="/static/cms/assets/images/like-color.png" alt=""></a></div> 
+                            <div><a href="/blog/{{.Blog.ID}}/{{.UserData.ID}}/upvote"><img class="w-10 pb-1 react" src="/static/cms/assets/images/like-color.png" alt=""></a></div> 
                             {{else}}
-                            <div><a href=""><img class="w-10 pb-1 react" src="/static/cms/assets/images/like.png" alt=""></a></div> 
+                            <div><a href="/blog/{{.Blog.ID}}/{{.UserData.ID}}/upvote"><img class="w-10 pb-1 react" src="/static/cms/assets/images/like.png" alt=""></a></div> 
                             {{end}}
                           
                            <div>{{.Blog.UpvoteCount}}</div>
                         </div>
                         <div class="text-center">
                             {{if .HasDownVoted}}
-                            <div><a href=""><img class="w-10 pb-1 react" src="/static/cms/assets/images/dislike-color.png" alt=""></a></div> 
+                            <div><a href="/blog/{{.Blog.ID}}/{{.UserData.ID}}/downvote"><img class="w-10 pb-1 react" src="/static/cms/assets/images/dislike-color.png" alt=""></a></div> 
                             {{else}}
-                            <div><a href=""><img class="w-10 pb-1 react" src="/static/cms/assets/images/dislike.png" alt=""></a></div> 
+                            <div><a href="/blog/{{.Blog.ID}}/{{.UserData.ID}}/downvote"><img class="w-10 pb-1 react" src="/static/cms/assets/images/dislike.png" alt=""></a></div> 
                             {{end}}
                             <div>{{.Blog.DownvoteCount}}</div>
                          </div>
@@ -120,6 +120,58 @@
                 </div>
             </div>
         </div>
+    </section>
+    <!------------------write comments--------------------------->
+    <section>
+        <div class="container mx-auto  p-6 w-7/12">
+         <div class="">
+           
+             <div class="space-y-4">
+           
+               <div class="flex">
+                 <div class="flex-shrink-0 mr-3">
+                   <img class="mt-2 rounded-full w-8 h-8 sm:w-10 sm:h-10" src="https://images.unsplash.com/photo-1604426633861-11b2faead63c?ixid=MXwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHw%3D&ixlib=rb-1.2.1&auto=format&fit=crop&w=200&h=200&q=80" alt="">
+                 </div>
+                 <div class="flex-1 px-4 py-2 sm:px-6 sm:py-4 leading-relaxed">
+                  <form method="post" action="/blog/{{.Blog.ID}}/{{.UserData.ID}}/comment" class="flex justify-between flex-wrap" style="align-items: center">
+                    <div class="w-1/10 ml-2"><strong>{{.UserData.UserName}}</strong></div>
+                    <div class="w-9/12 ml-2"><input name="Content" type="text" class=" w-full border rounded px-2 py-4 " required></div>
+                    <div class="w-1/12"><button type="submit" class="  "><img class="w-12" src="/static/cms/assets/images/right-arrow-blue.png" alt=""></button></div>
+                  </form>
+                 </div>
+               </div>
+           
+               
+             </div>
+           </div>
+        </div>
+     </section>
+    <!--------------------comments---------------------------------------->
+    <section>
+       <div class="container mx-auto border-t border-b py-6 w-7/12 mb-16 ">
+        <div class="">
+            <h3 class="mb-4 text-lg font-semibold text-gray-900">Comments</h3>
+          
+            <div class="space-y-4">
+          
+              <div class="flex">
+                <div class="flex-shrink-0 mr-3">
+                  <img class="mt-2 rounded-full w-8 h-8 sm:w-10 sm:h-10" src="https://images.unsplash.com/photo-1604426633861-11b2faead63c?ixid=MXwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHw%3D&ixlib=rb-1.2.1&auto=format&fit=crop&w=200&h=200&q=80" alt="">
+                </div>
+                <div class="flex-1 border rounded-lg px-4 py-2 sm:px-6 sm:py-4 leading-relaxed">
+                  <strong>Sarah</strong> <span class="text-xs text-gray-400">3:34 PM</span>
+                  <p class="text-sm">
+                    Lorem ipsum dolor sit amet, consetetur sadipscing elitr,
+                    sed diam nonumy eirmod tempor invidunt ut labore et dolore
+                    magna aliquyam erat, sed diam voluptua.
+                  </p>
+                </div>
+              </div>
+          
+              
+            </div>
+          </div>
+       </div>
     </section>
     <!---------------------------footer--------------------------------->
     <section>

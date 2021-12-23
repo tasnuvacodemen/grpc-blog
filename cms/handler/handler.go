@@ -58,6 +58,11 @@ func New(decoder *schema.Decoder, sess *sessions.CookieStore, tc tpb.TodoService
 	r.HandleFunc("/blog/{blog:[0-9]+}/update", h.Updateblog)
 	r.HandleFunc("/blog/{blog:[0-9]+}/delete", h.DeleteBlog)
 
+	r.HandleFunc("/blog/{blog:[0-9]+}/{user:[0-9]+}/comment", h.PostComment)
+	r.HandleFunc("/blog/{blog:[0-9]+}/{user:[0-9]+}/upvote", h.Upvote)
+	r.HandleFunc("/blog/{blog:[0-9]+}/{user:[0-9]+}/downvote", h.Downvote)
+	
+
 	// s.HandleFunc("/todos/create", h.CreateTodo)
 	// s.HandleFunc("/todos/store", h.StoreTodo)
 	s.HandleFunc("/logout", h.Logout)

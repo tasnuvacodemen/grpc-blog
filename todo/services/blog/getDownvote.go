@@ -4,18 +4,14 @@ import (
 	"context"
 
 	bpb "github.com/tasnuvatina/grpc-blog/proto/blog"
-	"google.golang.org/grpc/codes"
-	"google.golang.org/grpc/status"
 )
 
 func (s *BlogSvc)GetDownvote(ctx context.Context,req *bpb.GetDownvoteRequest) (*bpb.GetDownvoteResponse, error)  {
 	id := req.GetBlogID()
 	userId := req.GetUserID()
 
-	_,downvoteId,err := s.core.GetDownvote(context.Background(),id,userId) 
-	if err != nil {
-		return nil, status.Errorf(codes.Internal, "failed to your read downvote foe this blog")
-	}
+	_,downvoteId,_ := s.core.GetDownvote(context.Background(),id,userId) 
+	
 
 	if downvoteId!=0{
 		return &bpb.GetDownvoteResponse{

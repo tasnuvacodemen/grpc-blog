@@ -133,16 +133,29 @@ func (h *Handler) ReadBlog(rw http.ResponseWriter, r *http.Request) {
 	if user.ID == blogInfo.AuthorID {
 		isUserAuthor = true
 	}
+
+	// check is the user upvoted or down voted
+	upvoteId := h.CheckHasUpvoted(rw,r,blogId,userId)
+	hasUpVoted :=false
+	if upvoteId !=0{
+		hasUpVoted = true
+	}
+	downvoteId := h.CheckHasDownvoted(rw,r,blogId,userId)
+	hasDownVoted :=false
+	if downvoteId !=0{
+		hasDownVoted = true
+	}
+
 	// initializ data
 	SingleBlogData := SingleBlogData{
 		Blog:         blogInfo,
 		UserData:     user,
 		IsAuthor:     isUserAuthor,
-		HasUpvoted:   false,
-		HasDownVoted: false,
+		HasUpvoted:   hasUpVoted,
+		HasDownVoted: hasDownVoted,
 		Comments:     []*bpb.Comment{},
 	}
-	fmt.Printf("%#v", SingleBlogData)
+	// fmt.Printf("%#v", SingleBlogData)
 	// execute template
 	if err := h.templates.ExecuteTemplate(rw, "blog-page.html", SingleBlogData); err != nil {
 		http.Error(rw, "Unable to load blog page template", http.StatusInternalServerError)
@@ -418,6 +431,8 @@ func (h *Handler) Updateblog(rw http.ResponseWriter, r *http.Request) {
 
 }
 
+
+
 // load create blog template
 func (h *Handler) loadCreateBlogTemplate(rw http.ResponseWriter, blog Blog, vErrs map[string]string) {
 
@@ -489,6 +504,21 @@ func (h *Handler) GetBlogIdFromUrl(rw http.ResponseWriter, r *http.Request) (int
 	i, err := strconv.ParseInt(blogId, 10, 64)
 	if err != nil {
 		return 0, errors.New("blog id is invalid")
+	}
+	return i, nil
+}
+
+// get blogId from url
+func (h *Handler) GetUserIdFromUrl(rw http.ResponseWriter, r *http.Request) (int64, error) {
+	vars := mux.Vars(r)
+	userId := vars["user"]
+	if userId == "" {
+		http.Error(rw, "Can not get user with empty id", http.StatusInternalServerError)
+		return 0, errors.New("blog id is empty")
+	}
+	i, err := strconv.ParseInt(userId, 10, 64)
+	if err != nil {
+		return 0, errors.New("user id is invalid")
 	}
 	return i, nil
 }
