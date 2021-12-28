@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://cdn.tailwindcss.com"></script>
     <title>Create Blog</title>
 </head>
 <style>
@@ -18,8 +19,19 @@
     }
 </style>
 <body>
-    <form action="/blog/store" method="post" class="main-div" enctype="multipart/form-data">
-        <h4>Write new blog:</h4>
+    <section>
+        <div class="flex flex-wrap items-center justify-between p-12 border-b">
+         <div class="w-full lg:w-1/2"><a href="/"><img class="h-9 mx-auto lg:mx-0" src="/static/cms/assets/images/nordic-rose-log.svg" alt=""></a></div>
+         <div class="flex items-center w-full justify-center lg:justify-end lg:w-1/2">
+             <div class="px-6 uppercase"><a href="/create">Write Blog</a></div>
+             <div class="px-6 uppercase"><a href="javascipt:;">My Blogs</a></div>
+             <div class="px-6 uppercase"><a href="/logout">Logout</a></div>
+         </div>
+        </div>
+    </section>
+    <!-------------------------------------------------------------->
+    <!-- <form action="/blog/store" method="post" class="main-div" enctype="multipart/form-data">
+        <h4 class="text-center text-4xl font-bold mt-2">Write new blog</h4>
         <div class="single-div">
             <label for="title">Title of the Blog</label>
             <input type="text" name="Title" id="title" value="{{.Blog.Title}}" required>
@@ -43,7 +55,76 @@
         {{end}}
        </div>
        <button type="submit">Submit Blog</button>
-    </form>
+    </form> -->
+
+
+
+    <section>
+        <form action="/blog/store" method="post" class="form bg-white p-6 my-10 relative container mx-auto" enctype="multipart/form-data">
+            <div class="icon bg-blue-600 text-white w-6 h-6 absolute flex items-center justify-center p-5" style="left:-40px"><i class="fal fa-phone-volume fa-fw text-2xl transform -rotate-45"></i></div>
+            <h3 class="text-2xl text-gray-900 font-semibold">Let's Write Your Blog!</h3>
+            <div class="py-4 h-32">
+            <p>Blog Title</p>
+            <input type="text" name="Title" id="Title" value="{{.Blog.Title}}" class="border p-2 w-full mt-3" required>
+            {{if .Error}}
+            <p class="text-sm text-red-600">{{.Error.Title}}</p>
+            {{end}}
+            
+            </div>
+            <div class="py-4 h-72">
+            <p>Blog Description</p>
+            <textarea name="Description" id="Description" cols="10" rows="9" class="border p-2 mt-3 w-full">{{.Blog.Description}}</textarea>
+            {{if .Error}}
+            <p class="text-sm text-red-600">{{.Error.Description}}</p>
+            {{end}}
+            </div>
+            <div class="single-div">
+                <label for="Picture">Title of the book</label>
+                <input type="file" name="Picture" id="Picture" accept="image/png,image/jpeg,image/jpg">
+                {{if .Error}}
+                <div><small>{{.Error.file}}</small></div>
+                {{end}}
+               </div>
+            <input type="submit" value="Submit" class=" w-full mt-16 bg-blue-600 hover:bg-blue-500 text-white font-semibold p-3">
+            
+            </form>
+    </section>
+    <!---------------------------footer--------------------------------->
+    <section>
+        <div class=" bg-black py-9">
+            <p class="flex justify-between">
+                <span class="text-white font-extrabold text-xl uppercase block">Digital product design</span>
+                <span class="text-white text-xl uppercase block">Remote work</span>
+                <span class="text-white font-extrabold text-xl uppercase block">UX design</span>
+                <span class="text-white  text-xl uppercase block">Distributed teams</span>
+                <span class="text-white  font-extrabold text-xl uppercase block">Creativity</span>
+                <span class="text-white  text-xl uppercase block">strategy</span>
+                <span class="text-white  font-extrabold text-xl uppercase block">suspence</span>
+                <span class="text-white  text-xl uppercase block">growth</span>
+            </p>
+            <div class="flex justify-center pt-28 pb-6">
+                <img class="h-7" src="/static/cms/assets/images/logo-white.svg" alt="">
+            </div>
+            <p class="text-white text-center w-2/6 mx-auto">Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+                Duis eu velit tempus erat egestas efficitur. In hac habitasse platea dictumst. Fusce a nunc eget ligula
+                suscipit finibus. </p>
+            <div class="flex items-center justify-center py-9">
+                <div class=" border-b-2 border-white mx-6 py-2 text-center">
+                    <a class="text-white font-medium" href="javascript:;">Twitter</a>
+                </div>
+                <div class=" border-b-2 border-white mx-6 py-2 text-center">
+                    <a class="text-white font-medium" href="javascript:;">LinkedIn</a>
+                </div>
+                <div class=" border-b-2 border-white mx-6 py-2 text-center">
+                    <a class="text-white font-medium" href="javascript:;">RSS</a>
+                </div>
+            </div>
+            <div class=" text-center text-white font-medium pt-8">
+                <p>© 2012–2020 Nordic Rose Co.</p>
+                <p> All rights reserved. </p>
+            </div>
+        </div>
+    </section>
 </body>
 <script>
     document.getElementById("Picture")

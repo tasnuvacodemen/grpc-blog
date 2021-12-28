@@ -29,15 +29,9 @@
             <div class="w-full lg:w-1/2"><a href="/"><img class="h-9 mx-auto lg:mx-0"
                         src="/static/cms/assets/images/nordic-rose-log.svg" alt=""></a></div>
             <div class="flex items-center w-full justify-center lg:justify-end lg:w-1/2">
-                {{if ne .UserData.ID 0}}
                 <div class="px-6 uppercase"><a href="/create">Write Blog</a></div>
                 <div class="px-6 uppercase"><a href="javascipt:;">My Blogs</a></div>
                 <div class="px-6 uppercase"><a href="/logout">Logout</a></div>
-
-                {{else}}
-                <div class="px-6 uppercase"><a href="/signup">Sing up</a></div>
-                <div class="px-6 uppercase"><a href="/signin">Log In</a></div>
-                {{end}}
             </div>
         </div>
     </section>
