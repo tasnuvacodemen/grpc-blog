@@ -2,6 +2,7 @@ package handler
 
 import (
 	"flag"
+	"log"
 	"net/http"
 	"strings"
 	"text/template"
@@ -49,18 +50,21 @@ func New(decoder *schema.Decoder, sess *sessions.CookieStore, tc tpb.TodoService
 	r.HandleFunc("/register", h.Register)
 	r.HandleFunc("/signin", h.Signin)
 	r.HandleFunc("/login", h.Login)
-	s := r.NewRoute().Subrouter()
-	// blogs
-	r.HandleFunc("/create", h.CreateNewBlog)
-	r.HandleFunc("/blog/store", h.StoreNewBlog)
-	r.HandleFunc("/blog/{blog:[0-9]+}/read", h.ReadBlog)
-	r.HandleFunc("/blog/{blog:[0-9]+}/edit", h.EditBlog)
-	r.HandleFunc("/blog/{blog:[0-9]+}/update", h.Updateblog)
-	r.HandleFunc("/blog/{blog:[0-9]+}/delete", h.DeleteBlog)
 
-	r.HandleFunc("/blog/{blog:[0-9]+}/{user:[0-9]+}/comment", h.PostComment)
-	r.HandleFunc("/blog/{blog:[0-9]+}/{user:[0-9]+}/upvote", h.Upvote)
-	r.HandleFunc("/blog/{blog:[0-9]+}/{user:[0-9]+}/downvote", h.Downvote)
+	// sub router
+	s := r.NewRoute().Subrouter()
+	s.Use(h.authMiddleware)
+	// blogs
+	s.HandleFunc("/create", h.CreateNewBlog)
+	s.HandleFunc("/blog/store", h.StoreNewBlog)
+	s.HandleFunc("/blog/{blog:[0-9]+}/read", h.ReadBlog)
+	s.HandleFunc("/blog/{blog:[0-9]+}/edit", h.EditBlog)
+	s.HandleFunc("/blog/{blog:[0-9]+}/update", h.Updateblog)
+	s.HandleFunc("/blog/{blog:[0-9]+}/delete", h.DeleteBlog)
+
+	s.HandleFunc("/blog/{blog:[0-9]+}/{user:[0-9]+}/comment", h.PostComment)
+	s.HandleFunc("/blog/{blog:[0-9]+}/{user:[0-9]+}/upvote", h.Upvote)
+	s.HandleFunc("/blog/{blog:[0-9]+}/{user:[0-9]+}/downvote", h.Downvote)
 	
 
 	// s.HandleFunc("/todos/create", h.CreateTodo)
@@ -95,19 +99,20 @@ func (h *Handler) parseTemplates() {
 
 func (h *Handler) authMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(rw http.ResponseWriter, r *http.Request) {
-		next.ServeHTTP(rw, r)
-		return
-		// session,err := h.sess.Get(r,sessionName)
-		// if err!=nil{
-		// 	log.Fatal(err)
-		// }
+		
+		session,err := h.sess.Get(r,sessionName)
+		if err!=nil{
+			log.Fatal(err)
+		}
 
-		// authUserID := session.Values["authUserId"]
-		// if authUserID !=""{
-		// 	next.ServeHTTP(rw,r)
-		// }else{
-		// 	http.Error(rw,"unauthorized access",http.StatusUnauthorized)
-		// }
+		authUserID := session.Values["authUserId"]
+		if authUserID !=""{
+			next.ServeHTTP(rw,r)
+		}else{
+			http.Redirect(rw,r,"/signin",http.StatusTemporaryRedirect)
+			// http.Error(rw,"unauthorized access",http.StatusUnauthorized)
+			return
+		}
 	})
 }
 

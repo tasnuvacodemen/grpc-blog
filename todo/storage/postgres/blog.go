@@ -116,6 +116,14 @@ func (s *Storage) ReadAllBlog(ctx context.Context)  ([]*storage.Blog,error) {
 	return blogs,nil;
 }
 
+func (s *Storage) ReadAllSearchedBlog(ctx context.Context,search_value string)  ([]*storage.Blog,error) {
+	blogs := []*storage.Blog{}
+	if err :=s.db.Select(&blogs, "SELECT * FROM blogs WHERE (blogs.author_name ILIKE '%' || $1 || '%' OR blogs.title ILIKE '%' || $1 || '%' OR blogs.description ILIKE '%' || $1 || '%')",search_value);err!=nil{
+		return []*storage.Blog{},err
+	}
+	return blogs,nil;
+}
+
 func (s *Storage) EditBlog(ctx context.Context, b storage.Blog)  (*storage.Blog, error) {
 	stmt,err := s.db.PrepareNamed(updateBlog)
 	if err != nil {
@@ -157,6 +165,15 @@ func (s *Storage) GetAllUpvote(ctx context.Context, blog_id int64)  ([]*storage.
 	return upvotes,nil;
 }
 
+func (s *Storage)GetAllUpvoteCount(ctx context.Context, blog_id int64)(int64,error)  {
+	var upvoteCount int64
+	if err :=s.db.Get(&upvoteCount,"SELECT COUNT(id) FROM upvotes WHERE blog_id=$1",blog_id);err!=nil{
+		return 0,err
+
+	}
+	return upvoteCount,nil
+}
+
 func (s *Storage) RevertUpvoteBlog(ctx context.Context, upvote_id int64, user_id int64)  error {
 	var b storage.Upvote
 	if err:=s.db.Get(&b,"DELETE FROM upvotes WHERE id=$1 RETURNING *",upvote_id);err!=nil{
@@ -192,6 +209,14 @@ func (s *Storage) GetAllDownvote(ctx context.Context, blog_id int64)  ([]*storag
 	}
 	return downvotes,nil;
 }
+func (s *Storage)GetAllDownvoteCount(ctx context.Context, blog_id int64)(int64,error)  {
+	var downvoteCount int64
+	if err :=s.db.Get(&downvoteCount,"SELECT COUNT(id) FROM downvotes WHERE blog_id=$1",blog_id);err!=nil{
+		return 0,err
+
+	}
+	return downvoteCount,nil
+}
 
 func (s *Storage) RevertDownVoteBlog(ctx context.Context, downvote_id int64, user_id int64)  error {
 	var b storage.Downvote
@@ -221,5 +246,12 @@ func (s *Storage) GetAllComments(ctx context.Context, blog_id int64)  ([]*storag
 	}
 	return comments,nil;
 }
+func (s *Storage)GetAllCommentCount(ctx context.Context, blog_id int64)(int64,error)  {
+	var commentsCount int64
+	if err :=s.db.Get(&commentsCount,"SELECT COUNT(id) FROM comments WHERE blog_id=$1",blog_id);err!=nil{
+		return 0,err
 
+	}
+	return commentsCount,nil
+}
 	

@@ -51,6 +51,8 @@ type SingleBlogData struct {
 	IsAuthor     bool
 	HasUpvoted   bool
 	HasDownVoted bool
+	Upvotes      []*bpb.Upvote
+	Downvotes    []*bpb.Downvote
 	Comments     []*bpb.Comment
 }
 
@@ -67,6 +69,9 @@ func (b *Blog) Validate() error {
 
 // Blog home page handler
 func (h *Handler) BlogHome(rw http.ResponseWriter, r *http.Request) {
+	//getting sear value from url
+	searchedValue := r.URL.Query().Get("search")
+
 	userdata := User{}
 
 	// get userdata from session
@@ -74,15 +79,32 @@ func (h *Handler) BlogHome(rw http.ResponseWriter, r *http.Request) {
 
 	// get userData
 	userdata = h.GetUserStruct(rw, r, userId)
+	
+	var blogs []*bpb.Blog
 
-	//get all blogs
-	allBlogs, err := h.bc.ReadAllBlog(r.Context(), &bpb.ReadAllBlogRequest{})
-	if err != nil {
-		http.Error(rw, err.Error(), http.StatusInternalServerError)
-		return
+	if len(searchedValue) > 0 {
+		allBlogs, err := h.bc.ReadAllSearchedBlog(r.Context(), &bpb.ReadAllBlogSearchedRequest{
+			SearchValue: searchedValue,
+		})
+		if err != nil {
+			http.Error(rw, err.Error(), http.StatusInternalServerError)
+			return
+		}
+
+		blogs=allBlogs.Blogs
+	} else {
+		//get all blogs
+		allBlogs, err := h.bc.ReadAllBlog(r.Context(), &bpb.ReadAllBlogRequest{})
+		if err != nil {
+			http.Error(rw, err.Error(), http.StatusInternalServerError)
+			return
+		}
+		blogs=allBlogs.Blogs
 	}
+
+	
 	BlogList := BlogList{
-		Blogs:      allBlogs.Blogs,
+		Blogs:      blogs,
 		UserData:   userdata,
 		SearchTerm: "",
 	}
@@ -135,16 +157,53 @@ func (h *Handler) ReadBlog(rw http.ResponseWriter, r *http.Request) {
 	}
 
 	// check is the user upvoted or down voted
-	upvoteId := h.CheckHasUpvoted(rw,r,blogId,userId)
-	hasUpVoted :=false
-	if upvoteId !=0{
+	upvoteId := h.CheckHasUpvoted(rw, r, blogId, userId)
+	hasUpVoted := false
+	if upvoteId != 0 {
 		hasUpVoted = true
 	}
-	downvoteId := h.CheckHasDownvoted(rw,r,blogId,userId)
-	hasDownVoted :=false
-	if downvoteId !=0{
+	downvoteId := h.CheckHasDownvoted(rw, r, blogId, userId)
+	hasDownVoted := false
+	if downvoteId != 0 {
 		hasDownVoted = true
 	}
+
+	// get allupvotes
+	upvoteRes, err := h.GetAllUpvotes(rw, r, blogId)
+	if err != nil {
+		http.Error(rw, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	//get all downvotes
+	downvotesres, err := h.GetAllDownvotes(rw, r, blogId)
+	if err != nil {
+		http.Error(rw, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	//get all comments
+	commentsres, err := h.GetAllComments(rw, r, blogId)
+	if err != nil {
+		// http.Error(rw, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	//get all upvote count
+	upvoteCount, err := h.GetAllUpvoteCount(rw, r, blogId)
+	if err != nil {
+		http.Error(rw, err.Error(), http.StatusInternalServerError)
+		return
+	}
+	blogInfo.UpvoteCount = upvoteCount
+
+	//get all comments count
+	commentsCount, err := h.GetAllCommentCount(rw, r, blogId)
+	if err != nil {
+		http.Error(rw, err.Error(), http.StatusInternalServerError)
+		return
+	}
+	blogInfo.CommentsCount = commentsCount
 
 	// initializ data
 	SingleBlogData := SingleBlogData{
@@ -153,7 +212,9 @@ func (h *Handler) ReadBlog(rw http.ResponseWriter, r *http.Request) {
 		IsAuthor:     isUserAuthor,
 		HasUpvoted:   hasUpVoted,
 		HasDownVoted: hasDownVoted,
-		Comments:     []*bpb.Comment{},
+		Upvotes:      upvoteRes,
+		Downvotes:    downvotesres,
+		Comments:     commentsres,
 	}
 	// fmt.Printf("%#v", SingleBlogData)
 	// execute template
@@ -430,8 +491,6 @@ func (h *Handler) Updateblog(rw http.ResponseWriter, r *http.Request) {
 	http.Redirect(rw, r, "/", http.StatusTemporaryRedirect)
 
 }
-
-
 
 // load create blog template
 func (h *Handler) loadCreateBlogTemplate(rw http.ResponseWriter, blog Blog, vErrs map[string]string) {

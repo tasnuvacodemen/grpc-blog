@@ -3,6 +3,7 @@ package postgres
 import (
 	"context"
 	"reflect"
+	"sort"
 	"testing"
 
 	"github.com/google/go-cmp/cmp"
@@ -128,14 +129,77 @@ func TestStorage_ReadAllBlog(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got, err := s.ReadAllBlog(context.TODO())
+			gotList, err := s.ReadAllBlog(context.TODO())
 			if (err != nil) != tt.wantErr {
 				t.Errorf("Storage.ReadAllBlog() error = %v, wantErr %v", err, tt.wantErr)
 				return
 			}
-			if !reflect.DeepEqual(got, tt.want) {
-				t.Errorf("Storage.ReadAllBlog() = %v, want %v", got, tt.want)
+			sort.Slice(tt.want,func(i, j int) bool {
+				return tt.want[i].ID<tt.want[j].ID
+			})
+			sort.Slice(gotList,func(i, j int) bool {
+				return gotList[i].ID<gotList[j].ID
+			})
+
+			for i ,got :=range gotList{
+				if !cmp.Equal(got,tt.want[i]){
+					t.Errorf("Diff: got -, want += %v", cmp.Diff(got, tt.want[i]))
+				}
 			}
+		})
+	}
+}
+
+func TestStorage_ReadAllSearchedBlog(t *testing.T) {
+	s :=newTestStorage(t)
+	tests := []struct {
+		name    string
+		in string
+		want    []*storage.Blog
+		wantErr bool
+	}{
+		{
+			name: "READ SEARCHED BLOG SUCCESS",
+			in: "tasnuva",
+			want: []*storage.Blog{
+				{
+					ID:            1,
+					AuthorID:      23,
+					AuthorName:    "tasnuva",
+					CreatedAt:     "test created",
+					UpdateAt:      "test updated",
+					PictureString: "test picture",
+					Title:         "test title",
+					Description:   "test description",
+					UpvoteCount:   0,
+					DownvoteCount: 0,
+					CommentsCount: 0,
+				},
+			},
+		},
+	}
+	for _, tt := range tests {
+		tt :=tt
+		t.Run(tt.name, func(t *testing.T) {
+			gotList, err := s.ReadAllSearchedBlog(context.TODO(), tt.in)
+			if (err != nil) != tt.wantErr {
+				t.Errorf("Storage.ReadAllSearchedBlog() error = %v, wantErr %v", err, tt.wantErr)
+				return
+			}
+			// slice id order
+			sort.Slice(tt.want,func(i, j int) bool {
+				return tt.want[i].ID<tt.want[j].ID
+			})
+			sort.Slice(gotList,func(i, j int) bool {
+				return gotList[i].ID<gotList[j].ID
+			})
+
+			for i ,got :=range gotList{
+				if !cmp.Equal(got,tt.want[i]){
+					t.Errorf("Diff: got -, want += %v", cmp.Diff(got, tt.want[i]))
+				}
+			}
+			
 		})
 	}
 }
@@ -417,13 +481,52 @@ func TestStorage_GetAllComments(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 
-			got, err := s.GetAllComments(context.TODO(), tt.blog_id)
+			gotList, err := s.GetAllComments(context.TODO(), tt.blog_id)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("Storage.GetAllComments() error = %v, wantErr %v", err, tt.wantErr)
 				return
 			}
-			if !reflect.DeepEqual(got, tt.want) {
-				t.Errorf("Storage.GetAllComments() = %v, want %v", got, tt.want)
+			// slice id order
+			sort.Slice(tt.want,func(i, j int) bool {
+				return tt.want[i].ID<tt.want[j].ID
+			})
+			sort.Slice(gotList,func(i, j int) bool {
+				return gotList[i].ID<gotList[j].ID
+			})
+
+			for i ,got :=range gotList{
+				if !cmp.Equal(got,tt.want[i]){
+					t.Errorf("Diff: got -, want += %v", cmp.Diff(got, tt.want[i]))
+				}
+			}
+		})
+	}
+}
+
+func TestStorage_GetAllCommentCount(t *testing.T) {
+	s := newTestStorage(t)
+	tests := []struct {
+		name    string
+		in      int64
+		want    int64
+		wantErr bool
+	}{
+		{
+			name: "GetAllCommentCount SUCCESS",
+			in:   2,
+			want: 1,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+
+			got, err := s.GetAllCommentCount(context.TODO(), tt.in)
+			if (err != nil) != tt.wantErr {
+				t.Errorf("Storage.GetAllCommentCount() error = %v, wantErr %v", err, tt.wantErr)
+				return
+			}
+			if got != tt.want {
+				t.Errorf("Storage.GetAllCommentCount() = %v, want %v", got, tt.want)
 			}
 		})
 	}
@@ -452,20 +555,58 @@ func TestStorage_GetAllUpvote(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 
-			got, err := s.GetAllUpvote(context.TODO(), tt.blog_id)
+			gotList, err := s.GetAllUpvote(context.TODO(), tt.blog_id)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("Storage.GetAllUpvote() error = %v, wantErr %v", err, tt.wantErr)
 				return
 			}
-			if !reflect.DeepEqual(got, tt.want) {
-				t.Errorf("Storage.GetAllUpvote() = %v, want %v", got, tt.want)
+			// slice id order
+			sort.Slice(tt.want,func(i, j int) bool {
+				return tt.want[i].ID<tt.want[j].ID
+			})
+			sort.Slice(gotList,func(i, j int) bool {
+				return gotList[i].ID<gotList[j].ID
+			})
+
+			for i ,got :=range gotList{
+				if !cmp.Equal(got,tt.want[i]){
+					t.Errorf("Diff: got -, want += %v", cmp.Diff(got, tt.want[i]))
+				}
+			}
+		})
+	}
+}
+func TestStorage_GetAllUpvoteCount(t *testing.T) {
+	s := newTestStorage(t)
+	tests := []struct {
+		name    string
+		in      int64
+		want    int64
+		wantErr bool
+	}{
+		{
+			name: "GetAllUpvoteCount SUCCESS",
+			in:   2,
+			want: 1,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+
+			got, err := s.GetAllUpvoteCount(context.TODO(), tt.in)
+			if (err != nil) != tt.wantErr {
+				t.Errorf("Storage.GetAllUpvoteCount() error = %v, wantErr %v", err, tt.wantErr)
+				return
+			}
+			if got != tt.want {
+				t.Errorf("Storage.GetAllUpvoteCount() = %v, want %v", got, tt.want)
 			}
 		})
 	}
 }
 
 func TestStorage_GetAllDownvote(t *testing.T) {
-	s :=newTestStorage(t)
+	s := newTestStorage(t)
 	tests := []struct {
 		name    string
 		blog_id int64
@@ -486,19 +627,56 @@ func TestStorage_GetAllDownvote(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			
-			got, err := s.GetAllDownvote(context.TODO(), tt.blog_id)
+
+			gotList, err := s.GetAllDownvote(context.TODO(), tt.blog_id)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("Storage.GetAllDownvote() error = %v, wantErr %v", err, tt.wantErr)
 				return
 			}
-			if !reflect.DeepEqual(got, tt.want) {
-				t.Errorf("Storage.GetAllDownvote() = %v, want %v", got, tt.want)
+			// slice id order
+			sort.Slice(tt.want,func(i, j int) bool {
+				return tt.want[i].ID<tt.want[j].ID
+			})
+			sort.Slice(gotList,func(i, j int) bool {
+				return gotList[i].ID<gotList[j].ID
+			})
+
+			for i ,got :=range gotList{
+				if !cmp.Equal(got,tt.want[i]){
+					t.Errorf("Diff: got -, want += %v", cmp.Diff(got, tt.want[i]))
+				}
 			}
 		})
 	}
 }
 
+func TestStorage_GetAllDownvoteCount(t *testing.T) {
+	s := newTestStorage(t)
+	tests := []struct {
+		name    string
+		in      int64
+		want    int64
+		wantErr bool
+	}{
+		{
+			name: "GetAllDownvoteCount SUCCESS",
+			in:   2,
+			want: 1,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got, err := s.GetAllDownvoteCount(context.TODO(), tt.in)
+			if (err != nil) != tt.wantErr {
+				t.Errorf("Storage.GetAllDownvoteCount() error = %v, wantErr %v", err, tt.wantErr)
+				return
+			}
+			if got != tt.want {
+				t.Errorf("Storage.GetAllDownvoteCount() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
 
 func TestStorage_RevertUpvoteBlog(t *testing.T) {
 	s := newTestStorage(t)
@@ -547,4 +725,5 @@ func TestStorage_RevertDownVoteBlog(t *testing.T) {
 		})
 	}
 }
+
 

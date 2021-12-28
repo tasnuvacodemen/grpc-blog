@@ -272,5 +272,83 @@ func (h *Handler) CheckHasDownvoted(rw http.ResponseWriter, r *http.Request,blog
 	return res.IsDownvotedId
 }
 
+// get all upvotes,downvotes and comments
 
+func (h *Handler) GetAllUpvotes(rw http.ResponseWriter, r *http.Request,blogId int64) ([]*bpb.Upvote,error)   {
+	
+	res,err :=h.bc.GetAllUpvote(r.Context(),&bpb.GetAllUpvoteRequest{
+		BlogID: blogId,
+	})
+	if err != nil {
+		http.Error(rw, err.Error(), http.StatusInternalServerError)
+		return []*bpb.Upvote{},err
+	}
+	return res.Upvotes,nil
+}
+
+func (h *Handler) GetAllDownvotes(rw http.ResponseWriter, r *http.Request,blogId int64) ([]*bpb.Downvote,error)   {
+	
+	res,err :=h.bc.GetAllDownvote(r.Context(),&bpb.GetAllDownvoteRequest{
+		BlogID: blogId,
+	})
+	if err != nil {
+		http.Error(rw, err.Error(), http.StatusInternalServerError)
+		return []*bpb.Downvote{},err
+	}
+	return res.Downvotes,nil
+
+}
+
+func (h *Handler) GetAllComments(rw http.ResponseWriter, r *http.Request,blogId int64) ([]*bpb.Comment,error)   {
+	
+	res,err :=h.bc.GetAllComments(r.Context(),&bpb.GetAllCommentsRequest{
+		BlogID: blogId,
+	})
+	if err != nil {
+		// fmt.Print(err)
+		http.Error(rw, err.Error(), http.StatusInternalServerError)
+		return []*bpb.Comment{},err
+	}
+	fmt.Print(res.Comments,res,nil)
+	return res.Comments,nil
+
+
+}
+
+// get all counts
+
+func (h *Handler)GetAllUpvoteCount(rw http.ResponseWriter,r *http.Request,blogId int64)(int64,error)  {
+	res,err :=h.bc.GetAllUpvoteCount(r.Context(),&bpb.GetAllUpvoteCountRequest{
+		BlogID: blogId,
+	})
+
+	if err !=nil{
+		http.Error(rw, err.Error(), http.StatusInternalServerError)
+		return 0,err
+	}
+	return res.UpvoteCount,nil
+}
+
+func (h *Handler)GetAllDownvoteCount(rw http.ResponseWriter,r *http.Request,blogId int64)(int64,error)  {
+	res,err :=h.bc.GetAllDownvoteCount(r.Context(),&bpb.GetAllDownvoteCountRequest{
+		BlogID: blogId,
+	})
+
+	if err !=nil{
+		http.Error(rw, err.Error(), http.StatusInternalServerError)
+		return 0,err
+	}
+	return res.DownvoteCount,nil
+}
+func (h *Handler)GetAllCommentCount(rw http.ResponseWriter,r *http.Request,blogId int64)(int64,error)  {
+	res,err :=h.bc.GetAllCommentCount(r.Context(),&bpb.GetAllCommentCountRequest{
+		BlogID: blogId,
+	})
+
+	if err !=nil{
+		http.Error(rw, err.Error(), http.StatusInternalServerError)
+		return 0,err
+	}
+	return res.CommentCount,nil
+}
 

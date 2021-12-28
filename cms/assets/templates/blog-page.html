@@ -128,13 +128,15 @@
            
              <div class="space-y-4">
            
-               <div class="flex">
+               <div class="flex items-center">
                  <div class="flex-shrink-0 mr-3">
-                   <img class="mt-2 rounded-full w-8 h-8 sm:w-10 sm:h-10" src="https://images.unsplash.com/photo-1604426633861-11b2faead63c?ixid=MXwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHw%3D&ixlib=rb-1.2.1&auto=format&fit=crop&w=200&h=200&q=80" alt="">
+                    <div class="mt-2 rounded-full w-8 h-8 sm:w-10 sm:h-10 bg-black flex items-center justify-center">
+                        <h2 class="name-letters uppercase text-white text-xl font-bold"></h2>
+                    </div>
                  </div>
                  <div class="flex-1 px-4 py-2 sm:px-6 sm:py-4 leading-relaxed">
                   <form method="post" action="/blog/{{.Blog.ID}}/{{.UserData.ID}}/comment" class="flex justify-between flex-wrap" style="align-items: center">
-                    <div class="w-1/10 ml-2"><strong>{{.UserData.UserName}}</strong></div>
+                    <div class="w-1/10 ml-2"><strong class="usernames">{{.UserData.UserName}}</strong></div>
                     <div class="w-9/12 ml-2"><input name="Content" type="text" class=" w-full border rounded px-2 py-4 " required></div>
                     <div class="w-1/12"><button type="submit" class="  "><img class="w-12" src="/static/cms/assets/images/right-arrow-blue.png" alt=""></button></div>
                   </form>
@@ -151,25 +153,26 @@
        <div class="container mx-auto border-t border-b py-6 w-7/12 mb-16 ">
         <div class="">
             <h3 class="mb-4 text-lg font-semibold text-gray-900">Comments</h3>
+            {{range .Comments}}
+            <div class="space-y-4 my-2">
           
-            <div class="space-y-4">
-          
-              <div class="flex">
+              <div class="flex items-center">
                 <div class="flex-shrink-0 mr-3">
-                  <img class="mt-2 rounded-full w-8 h-8 sm:w-10 sm:h-10" src="https://images.unsplash.com/photo-1604426633861-11b2faead63c?ixid=MXwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHw%3D&ixlib=rb-1.2.1&auto=format&fit=crop&w=200&h=200&q=80" alt="">
+                    <div class="mt-2 rounded-full w-8 h-8 sm:w-10 sm:h-10 bg-black flex items-center justify-center">
+                        <h2 class="name-letters uppercase text-white text-xl font-bold"></h2>
+                    </div>
                 </div>
                 <div class="flex-1 border rounded-lg px-4 py-2 sm:px-6 sm:py-4 leading-relaxed">
-                  <strong>Sarah</strong> <span class="text-xs text-gray-400">3:34 PM</span>
-                  <p class="text-sm">
-                    Lorem ipsum dolor sit amet, consetetur sadipscing elitr,
-                    sed diam nonumy eirmod tempor invidunt ut labore et dolore
-                    magna aliquyam erat, sed diam voluptua.
+                  <strong class="usernames">{{.UserName}}</strong> <span class="text-xs text-gray-400">{{.CommentedAt}}</span>
+                  <p class="text-sm mt-1">
+                    {{.Content}}
                   </p>
                 </div>
               </div>
           
               
             </div>
+            {{end}}
           </div>
        </div>
     </section>
@@ -210,5 +213,17 @@
         </div>
     </section>
 </body>
+
+<script>
+    let nameLetters = document.getElementsByClassName("name-letters")
+    let usernames = document.getElementsByClassName("usernames")
+
+    for (let i = 0; i < usernames.length; i++) {
+       let usernameValue =usernames[i].innerHTML; 
+       let letter =usernameValue.substring(0,1)
+       nameLetters[i].innerHTML=letter
+        
+    }
+</script>
 
 </html>

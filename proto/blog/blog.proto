@@ -64,6 +64,13 @@ message ReadAllBlogResponse {
     repeated Blog Blogs =1;
 }
 
+message ReadAllBlogSearchedRequest {
+    string SearchValue =1;
+}
+message ReadAllBlogSearchedResponse {
+    repeated Blog Blogs =1;
+}
+
 message EditBlogRequest {
     Blog Blog =1;
 }
@@ -91,6 +98,14 @@ message GetAllUpvoteRequest {
 }
 message GetAllUpvoteResponse {
     repeated Upvote Upvotes =1;
+}
+
+
+message GetAllUpvoteCountRequest {
+    int64 BlogID=1;
+}
+message GetAllUpvoteCountResponse {
+    int64 UpvoteCount =1;
 }
 
 message RevertUpvoteBlogRequest {
@@ -125,7 +140,12 @@ message GetAllDownvoteRequest {
 message GetAllDownvoteResponse {
     repeated Downvote Downvotes =1;
 }
-
+message GetAllDownvoteCountRequest {
+    int64 BlogID=1;
+}
+message GetAllDownvoteCountResponse {
+    int64 DownvoteCount =1;
+}
 message CommentBlogRequest {
     Comment Comment=1;
 }
@@ -139,11 +159,19 @@ message GetAllCommentsResponse {
     repeated Comment Comments=1;
 }
 
+message GetAllCommentCountRequest {
+    int64 BlogID =1;
+}
+message GetAllCommentCountResponse {
+    int64  CommentCount =1;
+}
+
 service BlogService{
     rpc WriteBlog (WriteBlogRequest) returns (WriteBlogResponse){};
     rpc DeleteBlog (DeleteBlogRequest) returns (DeleteBlogResponse){};
     rpc ReadBlog (ReadBlogRequest) returns (ReadBlogResponse){};
     rpc ReadAllBlog (ReadAllBlogRequest) returns (ReadAllBlogResponse){};
+    rpc ReadAllSearchedBlog (ReadAllBlogSearchedRequest) returns (ReadAllBlogSearchedResponse){};
     rpc EditBlog (EditBlogRequest) returns (EditBlogResponse){};
 
     // here
@@ -151,10 +179,13 @@ service BlogService{
     rpc RevertUpvoteBlog (RevertUpvoteBlogRequest) returns (RevertUpvoteBlogResponse){};
     rpc GetUpvote (GetUpvoteRequest) returns (GetUpvoteResponse){};
     rpc GetAllUpvote (GetAllUpvoteRequest) returns (GetAllUpvoteResponse){};
+    rpc GetAllUpvoteCount (GetAllUpvoteCountRequest) returns (GetAllUpvoteCountResponse){};
     rpc DownVoteBlog (DownVoteRequest) returns (DownVoteResponse){};
     rpc RevertDownVoteBlog (RevertDownVoteBlogRequest) returns (RevertDownVoteBlogResponse){};
     rpc GetDownvote (GetDownvoteRequest) returns (GetDownvoteResponse){};
     rpc GetAllDownvote (GetAllDownvoteRequest) returns (GetAllDownvoteResponse){};
+    rpc GetAllDownvoteCount (GetAllDownvoteCountRequest) returns (GetAllDownvoteCountResponse){};
     rpc CommentBlog (CommentBlogRequest) returns (CommentBlogResponse){};
     rpc GetAllComments (GetAllCommentsRequest) returns (GetAllCommentsResponse){};
+    rpc GetAllCommentCount (GetAllCommentCountRequest) returns (GetAllCommentCountResponse){};
 }
