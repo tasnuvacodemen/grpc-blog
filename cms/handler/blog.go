@@ -391,6 +391,7 @@ func (h *Handler) EditBlog(rw http.ResponseWriter, r *http.Request) {
 	userId := h.GetUserIdFromSession(r)
 	// get userData
 	userdata := h.GetUserStruct(rw, r, userId)
+	
 	// getting blog data from database by id
 	blogRes, err := h.bc.ReadBlog(r.Context(), &bpb.ReadBlogRequest{
 		BlogID:   blogId,
@@ -418,7 +419,15 @@ func (h *Handler) EditBlog(rw http.ResponseWriter, r *http.Request) {
 		http.Redirect(rw, r, "/", http.StatusTemporaryRedirect)
 		return
 	}
-	h.loadEditBlogTemplate(rw, blogData, userdata, map[string]string{})
+	if userId ==blogData.AuthorID {
+		h.loadEditBlogTemplate(rw, blogData, userdata, map[string]string{})
+		return
+	}else{
+		blogUrl :=fmt.Sprintf("/blog/%v/read",blogData.ID)
+		http.Redirect(rw, r, blogUrl, http.StatusTemporaryRedirect)
+		return
+	}
+	
 }
 
 func (h *Handler) Updateblog(rw http.ResponseWriter, r *http.Request) {

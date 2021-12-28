@@ -17,6 +17,43 @@
     .single-div{
         margin: 10px;
     }
+
+
+    .marquee {
+  width: 100%;
+  margin: 0 auto;
+  white-space: nowrap;
+  overflow: hidden;
+  height: 61px;
+  background: #000000;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  align-items: center;
+}
+
+.marquee .text {
+  display: inline-block;
+  padding-left: 4.4rem;
+  text-indent: 0;
+  animation: marquee 12s linear infinite;
+  font-weight: 500;
+  font-size: 1.4rem;
+  line-height: 125%;
+  letter-spacing: -0.04em;
+  text-transform: uppercase;
+  color: #f2f2f2;
+}
+@keyframes marquee {
+  0% {
+    transform: translate(0, 0);
+  }
+
+  100% {
+    transform: translate(-100%, 0);
+  }
+}
+
 </style>
 <body>
     <section>
@@ -34,7 +71,7 @@
         <h4 class="text-center text-4xl font-bold mt-2">Write new blog</h4>
         <div class="single-div">
             <label for="title">Title of the Blog</label>
-            <input type="text" name="Title" id="title" value="{{.Blog.Title}}" required>
+            <input type="text" name="Title" id="title" value="{{.Blog.Title}}" >
             {{if .Error}}
             <div><small>{{.Error.Title}}</small></div>
             {{end}}
@@ -65,7 +102,7 @@
             <h3 class="text-2xl text-gray-900 font-semibold">Let's Write Your Blog!</h3>
             <div class="py-4 h-32">
             <p>Blog Title</p>
-            <input type="text" name="Title" id="Title" value="{{.Blog.Title}}" class="border p-2 w-full mt-3" required>
+            <input type="text" name="Title" id="Title" value="{{.Blog.Title}}" class="border p-2 w-full mt-3" >
             {{if .Error}}
             <p class="text-sm text-red-600">{{.Error.Title}}</p>
             {{end}}
@@ -92,7 +129,32 @@
     <!---------------------------footer--------------------------------->
     <section>
         <div class=" bg-black py-9">
-            <p class="flex justify-between">
+            <!------------------------------------------------->
+            <section class="marquee">
+                <h4 class="text">
+                  Designer Web - UI Designer - Designer de Marcas
+                </h4>
+                <h4 class="text">
+                  Designer Web - UI Designer - Designer de Marcas
+                </h4>
+                <h4 class="text">
+                  Designer Web - UI Designer - Designer de Marcas
+                </h4>
+                <h4 class="text">
+                  Designer Web - UI Designer - Designer de Marcas
+                </h4>
+                <h4 class="text">
+                  Designer Web - UI Designer - Designer de Marcas
+                </h4>
+                <h4 class="text">
+                  Designer Web - UI Designer - Designer de Marcas
+                </h4>
+                <h4 class="text">
+                  Designer Web - UI Designer - Designer de Marcas
+                </h4>
+              </section>
+            <!-------------------------------------->
+            <!-- <p class="flex justify-between">
                 <span class="text-white font-extrabold text-xl uppercase block">Digital product design</span>
                 <span class="text-white text-xl uppercase block">Remote work</span>
                 <span class="text-white font-extrabold text-xl uppercase block">UX design</span>
@@ -101,7 +163,7 @@
                 <span class="text-white  text-xl uppercase block">strategy</span>
                 <span class="text-white  font-extrabold text-xl uppercase block">suspence</span>
                 <span class="text-white  text-xl uppercase block">growth</span>
-            </p>
+            </p> -->
             <div class="flex justify-center pt-28 pb-6">
                 <img class="h-7" src="/static/cms/assets/images/logo-white.svg" alt="">
             </div>

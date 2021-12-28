@@ -42,7 +42,7 @@
             <h3 class="text-2xl text-gray-900 font-semibold">Let's Edit Your Blog!</h3>
             <div class="py-4 h-32">
             <p>Blog Title</p>
-            <input type="text" name="Title" id="Title" value="{{.Blog.Title}}" class="border p-2 w-full mt-3">
+            <input type="text" name="Title" id="Title" value="{{.Blog.Title}}" class="border p-2 w-full mt-3" >
             {{if .Error}}
             <p class="text-sm text-red-600">{{.Error.Title}}</p>
             {{end}}
@@ -50,7 +50,7 @@
             </div>
             <div class="py-4 h-72">
             <p>Blog Description</p>
-            <textarea name="Description" id="Description" cols="10" rows="9" class="border p-2 mt-3 w-full">{{.Blog.Description}}</textarea>
+            <textarea name="Description" id="Description" cols="10" rows="9" class="border p-2 mt-3 w-full" >{{.Blog.Description}}</textarea>
             {{if .Error}}
             <p class="text-sm text-red-600">{{.Error.Description}}</p>
             {{end}}

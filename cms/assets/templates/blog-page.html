@@ -9,11 +9,48 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- <link rel="stylesheet" href="/static/cms/assets/css/tailwind.css"> -->
     <style>
-        .react{
+        .react {
             transition: transform .2s;
         }
+
         .react:hover {
-            transform: scale(1.3); 
+            transform: scale(1.3);
+        }
+
+        .marquee {
+            width: 100%;
+            margin: 0 auto;
+            white-space: nowrap;
+            overflow: hidden;
+            height: 61px;
+            background: #000000;
+            display: -webkit-box;
+            display: -ms-flexbox;
+            display: flex;
+            align-items: center;
+        }
+
+        .marquee .text {
+            display: inline-block;
+            padding-left: 4.4rem;
+            text-indent: 0;
+            animation: marquee 12s linear infinite;
+            font-weight: 500;
+            font-size: 1.4rem;
+            line-height: 125%;
+            letter-spacing: -0.04em;
+            text-transform: uppercase;
+            color: #f2f2f2;
+        }
+
+        @keyframes marquee {
+            0% {
+                transform: translate(0, 0);
+            }
+
+            100% {
+                transform: translate(-100%, 0);
+            }
         }
     </style>
 </head>
@@ -56,32 +93,36 @@
             </div>
         </div>
     </section>
+    {{if eq .UserData.ID .Blog.AuthorID}}
     <section>
         <div class="container mx-auto  py-6 w-7/12 mb-16">
             <div class="w-full flex justify-between">
                 <div class="w-1/2">
                     <div class="w-full flex">
                         <div class="text-center">
-                            <a class="px-8 py-6 bg-black rounded-sm text-lg text-white font-bold" href="/blog/{{.Blog.ID}}/edit">Edit Blog</a>
+                            <a class="px-8 py-6 bg-black rounded-sm text-lg text-white font-bold"
+                                href="/blog/{{.Blog.ID}}/edit">Edit Blog</a>
                         </div>
                     </div>
                 </div>
                 <div class="w-1/2">
                     <div class="w-full flex justify-end">
                         <div class="text-center">
-                            <a class="px-8 py-6 bg-red-900 rounded-sm text-lg text-white font-bold" href="/blog/{{.Blog.ID}}/delete">Delete Blog</a>
+                            <a class="px-8 py-6 bg-red-900 rounded-sm text-lg text-white font-bold"
+                                href="/blog/{{.Blog.ID}}/delete">Delete Blog</a>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
     </section>
+    {{end}}
     <!-------------------Blog Description---------------------->
     <section>
         <div class="container mx-auto border-t py-16 w-7/12 ">
             <h3 class="text-center text-4xl font-bold mb-6">Blog</h3>
             <div class="w-full flex flex-wrap items-center justify-between">
-                <p class=" text-justify">{{.Blog.Description}}</p>
+                <p class=" text-justify" id="description">{{.Blog.Description}}</p>
 
             </div>
         </div>
@@ -93,29 +134,34 @@
                     <div class="w-full flex gap-x-12">
                         <div class="text-center">
                             {{if .HasUpvoted}}
-                            <div><a href="/blog/{{.Blog.ID}}/{{.UserData.ID}}/upvote"><img class="w-10 pb-1 react" src="/static/cms/assets/images/like-color.png" alt=""></a></div> 
+                            <div><a href="/blog/{{.Blog.ID}}/{{.UserData.ID}}/upvote"><img class="w-10 pb-1 react"
+                                        src="/static/cms/assets/images/like-color.png" alt=""></a></div>
                             {{else}}
-                            <div><a href="/blog/{{.Blog.ID}}/{{.UserData.ID}}/upvote"><img class="w-10 pb-1 react" src="/static/cms/assets/images/like.png" alt=""></a></div> 
+                            <div><a href="/blog/{{.Blog.ID}}/{{.UserData.ID}}/upvote"><img class="w-10 pb-1 react"
+                                        src="/static/cms/assets/images/like.png" alt=""></a></div>
                             {{end}}
-                          
-                           <div>{{.Blog.UpvoteCount}}</div>
+
+                            <div>{{.Blog.UpvoteCount}}</div>
                         </div>
                         <div class="text-center">
                             {{if .HasDownVoted}}
-                            <div><a href="/blog/{{.Blog.ID}}/{{.UserData.ID}}/downvote"><img class="w-10 pb-1 react" src="/static/cms/assets/images/dislike-color.png" alt=""></a></div> 
+                            <div><a href="/blog/{{.Blog.ID}}/{{.UserData.ID}}/downvote"><img class="w-10 pb-1 react"
+                                        src="/static/cms/assets/images/dislike-color.png" alt=""></a></div>
                             {{else}}
-                            <div><a href="/blog/{{.Blog.ID}}/{{.UserData.ID}}/downvote"><img class="w-10 pb-1 react" src="/static/cms/assets/images/dislike.png" alt=""></a></div> 
+                            <div><a href="/blog/{{.Blog.ID}}/{{.UserData.ID}}/downvote"><img class="w-10 pb-1 react"
+                                        src="/static/cms/assets/images/dislike.png" alt=""></a></div>
                             {{end}}
                             <div>{{.Blog.DownvoteCount}}</div>
-                         </div>
+                        </div>
                     </div>
                 </div>
                 <div class="w-1/2">
                     <div class="w-full flex justify-end">
                         <div class="text-center">
-                            <div class=" cursor-pointer"><img class="w-10 pb-1 react" src="/static/cms/assets/images/comment.png" alt=""></div> 
+                            <div class=" cursor-pointer"><img class="w-10 pb-1 react"
+                                    src="/static/cms/assets/images/comment.png" alt=""></div>
                             <div>{{.Blog.CommentsCount}}</div>
-                         </div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -124,71 +170,92 @@
     <!------------------write comments--------------------------->
     <section>
         <div class="container mx-auto  p-6 w-7/12">
-         <div class="">
-           
-             <div class="space-y-4">
-           
-               <div class="flex items-center">
-                 <div class="flex-shrink-0 mr-3">
-                    <div class="mt-2 rounded-full w-8 h-8 sm:w-10 sm:h-10 bg-black flex items-center justify-center">
-                        <h2 class="name-letters uppercase text-white text-xl font-bold"></h2>
+            <div class="">
+
+                <div class="space-y-4">
+
+                    <div class="flex items-center">
+                        <div class="flex-shrink-0 mr-3">
+                            <div
+                                class="mt-2 rounded-full w-8 h-8 sm:w-10 sm:h-10 bg-black flex items-center justify-center">
+                                <h2 class="name-letters uppercase text-white text-xl font-bold"></h2>
+                            </div>
+                        </div>
+                        <div class="flex-1 px-4 py-2 sm:px-6 sm:py-4 leading-relaxed">
+                            <form method="post" action="/blog/{{.Blog.ID}}/{{.UserData.ID}}/comment"
+                                class="flex justify-between flex-wrap" style="align-items: center">
+                                <div class="w-1/10 ml-2"><strong class="usernames">{{.UserData.UserName}}</strong></div>
+                                <div class="w-9/12 ml-2"><input name="Content" type="text"
+                                        class=" w-full border rounded px-2 py-4 " required></div>
+                                <div class="w-1/12"><button type="submit" class="  "><img class="w-12"
+                                            src="/static/cms/assets/images/right-arrow-blue.png" alt=""></button></div>
+                            </form>
+                        </div>
                     </div>
-                 </div>
-                 <div class="flex-1 px-4 py-2 sm:px-6 sm:py-4 leading-relaxed">
-                  <form method="post" action="/blog/{{.Blog.ID}}/{{.UserData.ID}}/comment" class="flex justify-between flex-wrap" style="align-items: center">
-                    <div class="w-1/10 ml-2"><strong class="usernames">{{.UserData.UserName}}</strong></div>
-                    <div class="w-9/12 ml-2"><input name="Content" type="text" class=" w-full border rounded px-2 py-4 " required></div>
-                    <div class="w-1/12"><button type="submit" class="  "><img class="w-12" src="/static/cms/assets/images/right-arrow-blue.png" alt=""></button></div>
-                  </form>
-                 </div>
-               </div>
-           
-               
-             </div>
-           </div>
+
+
+                </div>
+            </div>
         </div>
-     </section>
+    </section>
     <!--------------------comments---------------------------------------->
     <section>
-       <div class="container mx-auto border-t border-b py-6 w-7/12 mb-16 ">
-        <div class="">
-            <h3 class="mb-4 text-lg font-semibold text-gray-900">Comments</h3>
-            {{range .Comments}}
-            <div class="space-y-4 my-2">
-          
-              <div class="flex items-center">
-                <div class="flex-shrink-0 mr-3">
-                    <div class="mt-2 rounded-full w-8 h-8 sm:w-10 sm:h-10 bg-black flex items-center justify-center">
-                        <h2 class="name-letters uppercase text-white text-xl font-bold"></h2>
+        <div class="container mx-auto border-t border-b py-6 w-7/12 mb-16 ">
+            <div class="">
+                <h3 class="mb-4 text-lg font-semibold text-gray-900">Comments</h3>
+                {{range .Comments}}
+                <div class="space-y-4 my-2">
+
+                    <div class="flex items-center">
+                        <div class="flex-shrink-0 mr-3">
+                            <div
+                                class="mt-2 rounded-full w-8 h-8 sm:w-10 sm:h-10 bg-black flex items-center justify-center">
+                                <h2 class="name-letters uppercase text-white text-xl font-bold"></h2>
+                            </div>
+                        </div>
+                        <div class="flex-1 border rounded-lg px-4 py-2 sm:px-6 sm:py-4 leading-relaxed">
+                            <strong class="usernames">{{.UserName}}</strong> <span
+                                class="text-xs text-gray-400">{{.CommentedAt}}</span>
+                            <p class="text-sm mt-1">
+                                {{.Content}}
+                            </p>
+                        </div>
                     </div>
+
+
                 </div>
-                <div class="flex-1 border rounded-lg px-4 py-2 sm:px-6 sm:py-4 leading-relaxed">
-                  <strong class="usernames">{{.UserName}}</strong> <span class="text-xs text-gray-400">{{.CommentedAt}}</span>
-                  <p class="text-sm mt-1">
-                    {{.Content}}
-                  </p>
-                </div>
-              </div>
-          
-              
+                {{end}}
             </div>
-            {{end}}
-          </div>
-       </div>
+        </div>
     </section>
     <!---------------------------footer--------------------------------->
     <section>
         <div class=" bg-black py-9">
-            <p class="flex justify-between">
-                <span class="text-white font-extrabold text-xl uppercase block">Digital product design</span>
-                <span class="text-white text-xl uppercase block">Remote work</span>
-                <span class="text-white font-extrabold text-xl uppercase block">UX design</span>
-                <span class="text-white  text-xl uppercase block">Distributed teams</span>
-                <span class="text-white  font-extrabold text-xl uppercase block">Creativity</span>
-                <span class="text-white  text-xl uppercase block">strategy</span>
-                <span class="text-white  font-extrabold text-xl uppercase block">suspence</span>
-                <span class="text-white  text-xl uppercase block">growth</span>
-            </p>
+            <!------------------------------------------------->
+            <section class="marquee">
+                <h4 class="text">
+                    Nordic rose - The Blog of Champions.
+                </h4>
+                <h4 class="text">
+                    Nordic rose - The Blog of Champions.
+                </h4>
+                <h4 class="text">
+                    Nordic rose - The Blog of Champions.
+                </h4>
+                <h4 class="text">
+                    Nordic rose - The Blog of Champions.
+                </h4>
+                <h4 class="text">
+                    Nordic rose - The Blog of Champions.
+                </h4>
+                <h4 class="text">
+                    Nordic rose - The Blog of Champions.
+                </h4>
+                <h4 class="text">
+                    Nordic rose - The Blog of Champions.
+                </h4>
+            </section>
+            <!-------------------------------------->
             <div class="flex justify-center pt-28 pb-6">
                 <img class="h-7" src="/static/cms/assets/images/logo-white.svg" alt="">
             </div>
@@ -219,11 +286,22 @@
     let usernames = document.getElementsByClassName("usernames")
 
     for (let i = 0; i < usernames.length; i++) {
-       let usernameValue =usernames[i].innerHTML; 
-       let letter =usernameValue.substring(0,1)
-       nameLetters[i].innerHTML=letter
-        
+        let usernameValue = usernames[i].innerHTML;
+        let letter = usernameValue.substring(0, 1)
+        nameLetters[i].innerHTML = letter
+
     }
+
+    let descriptionArray = document.getElementById("description").innerHTML.split(".")
+    descriptionArray.forEach((element, i) => {
+        if (i % 3 == 0) {
+            descriptionArray[i] = `${element}<br>`
+        }
+    })
+    let newdescription = descriptionArray.join("")
+    console.log(newdescription)
+    document.getElementById("description").innerHTML = ""
+    document.getElementById("description").innerHTML = newdescription
 </script>
 
 </html>
